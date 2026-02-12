@@ -224,6 +224,7 @@ button {
   height: 100%;
   object-fit: cover;
   object-position: center center;
+  transition: transform 0.42s ease, filter 0.42s ease;
 }
 
 .scene-hero__overlay {
@@ -232,6 +233,16 @@ button {
   background: transparent;
   pointer-events: none;
   transition: background 0.4s ease;
+}
+
+.scene-hero[data-speaker="maya"] .scene-hero__img {
+  transform: scale(1.018) translateX(0.8%);
+  filter: saturate(1.06) brightness(1.02);
+}
+
+.scene-hero[data-speaker="player"] .scene-hero__img {
+  transform: scale(1.018) translateX(-0.8%);
+  filter: saturate(1.04) brightness(1.015);
 }
 
 /* Mood tint overlays — light color wash, scene stays fully visible */
@@ -304,6 +315,33 @@ button {
   100% { transform: scale(1); }
 }
 
+@keyframes bubbleIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes talkFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes bubbleOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(5px) scale(0.985);
+  }
+}
+
 
 /* ── 吹き出し (Fukidashi) — manga speech bubble ──────── */
 .vn-dialogue .bubble {
@@ -320,6 +358,14 @@ button {
   box-shadow: 3px 3px 0 rgba(26,26,46,0.18);
   backdrop-filter: blur(6px);
   z-index: 4;
+}
+
+.vn-dialogue .bubble.is-entering {
+  animation: bubbleIn 0.26s ease both;
+}
+
+.vn-dialogue .bubble.is-speaking {
+  animation: talkFloat 2s ease-in-out infinite;
 }
 
 /* Tail pointing RIGHT toward Maya — outer (ink border) */
@@ -395,6 +441,79 @@ button {
   transition: background 0.15s;
 }
 .vn-dialogue .bubble .continue-btn:hover { background: var(--ink-faint); }
+
+/* Player speaking bubble */
+.vn-dialogue .player-bubble {
+  position: absolute;
+  right: 16px;
+  top: 24%;
+  width: 34%;
+  max-width: 280px;
+  min-width: 220px;
+  background: rgba(244,247,255,0.95);
+  border: 3px solid #2c4a8a;
+  border-radius: 20px;
+  padding: 12px 14px;
+  box-shadow: 3px 3px 0 rgba(44,74,138,0.18);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.vn-dialogue .player-bubble::before {
+  content: "";
+  position: absolute;
+  left: -24px;
+  bottom: 24%;
+  width: 0;
+  height: 0;
+  border-top: 14px solid transparent;
+  border-bottom: 14px solid transparent;
+  border-right: 24px solid #2c4a8a;
+}
+
+.vn-dialogue .player-bubble::after {
+  content: "";
+  position: absolute;
+  left: -18px;
+  bottom: calc(24% + 3px);
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 18px solid rgba(244,247,255,0.95);
+}
+
+.vn-dialogue .player-bubble .speaker-name {
+  color: #2c4a8a;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 6px;
+  padding-bottom: 5px;
+  border-bottom: 1.5px solid rgba(44,74,138,0.18);
+}
+
+.vn-dialogue .player-bubble .line-text {
+  color: #18284f;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.vn-dialogue .player-bubble.is-entering {
+  animation: bubbleIn 0.24s ease both;
+}
+
+.vn-dialogue .player-bubble.is-speaking {
+  animation: talkFloat 1.8s ease-in-out infinite;
+}
+
+.vn-dialogue .player-bubble.is-exit {
+  animation: bubbleOut 0.22s ease both;
+}
 
 /* ── Mood tints on bubble (manga quality styling) ────── */
 /* Natural/warm: clean rounded bubble */
@@ -866,6 +985,16 @@ button {
   }
   .vn-dialogue .bubble::before,
   .vn-dialogue .bubble::after { display: none; }
+  .vn-dialogue .player-bubble {
+    right: 8px;
+    left: 8px;
+    top: 23%;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+  }
+  .vn-dialogue .player-bubble::before,
+  .vn-dialogue .player-bubble::after { display: none; }
   .vn-dialogue .bubble .line-text { font-size: 13px; }
   .vn-dialogue .bubble .speaker-name { font-size: 10px; }
   .scene-hero__pills { top: 8px; left: 8px; right: 8px; gap: 4px; }

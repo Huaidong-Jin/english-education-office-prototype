@@ -470,9 +470,58 @@
     return (name || "N").slice(0, 1).toUpperCase();
   }
 
+  /**
+   * Mark active speaker for cinematic focus styles.
+   * @param {"maya"|"player"|""} who
+   */
+  function setSpeakerFocus(who) {
+    if (bgHintEl) bgHintEl.dataset.speaker = who;
+    if (dialogueBox) dialogueBox.dataset.speaker = who;
+  }
+
+  function removePlayerBubble() {
+    const old = dialogueBox.querySelector(".player-bubble");
+    if (old) old.remove();
+  }
+
+  /**
+   * Show a temporary player speech bubble with animation.
+   * @param {string} text
+   */
+  function showPlayerBubble(text) {
+    const dlg = dialogueBox.querySelector(".dialogue");
+    if (!dlg) return null;
+
+    removePlayerBubble();
+
+    const bubble = document.createElement("div");
+    bubble.className = "player-bubble is-entering";
+
+    const nameEl = document.createElement("div");
+    nameEl.className = "speaker-name";
+    nameEl.textContent = "YOU";
+
+    const lineEl = document.createElement("p");
+    lineEl.className = "line-text";
+    lineEl.textContent = text;
+
+    bubble.appendChild(nameEl);
+    bubble.appendChild(lineEl);
+    dlg.appendChild(bubble);
+
+    requestAnimationFrame(() => {
+      bubble.classList.remove("is-entering");
+      bubble.classList.add("is-speaking");
+    });
+
+    return bubble;
+  }
+
   /** @param {NpcNode} node @param {"natural"|"off"|"awkward"|null} qualityHint */
   function renderNpcNode(node, qualityHint) {
     state.ended = false;
+    setSpeakerFocus("maya");
+    removePlayerBubble();
     pickBox.style.display = "none";
     dialogueBox.style.opacity = "1";
     dialogueBox.style.pointerEvents = "auto";
@@ -495,6 +544,7 @@
     const bubble = document.createElement("div");
     bubble.className = "bubble";
     if (mood) bubble.classList.add(`mood-${mood}`);
+    bubble.classList.add("is-entering");
 
     const nameEl = document.createElement("div");
     nameEl.className = "speaker-name";
@@ -541,6 +591,10 @@
     dlg.appendChild(avatar);
     dlg.appendChild(bubble);
     dialogueBox.appendChild(dlg);
+    requestAnimationFrame(() => {
+      bubble.classList.remove("is-entering");
+      bubble.classList.add("is-speaking");
+    });
 
     // Check if next node is a pick — if so, auto-advance after speech
     const nextNode = node.next ? nodeMap.get(node.next) : null;
@@ -580,6 +634,7 @@
   /** @param {PickNode} node */
   function renderPickNode(node) {
     state.ended = false;
+    setSpeakerFocus("");
     nodeIdLabel.textContent = node.id;
 
     // Hide Maya's bubble, show picks overlay
@@ -677,6 +732,8 @@
   /** @param {EndNode} node */
   function renderEndNode(node) {
     state.ended = true;
+    setSpeakerFocus("maya");
+    removePlayerBubble();
     nodeIdLabel.textContent = node.id;
 
     pickBox.style.display = "none";
@@ -796,8 +853,18 @@
     pickBox.style.display = "none";
     dialogueBox.style.opacity = "1";
     dialogueBox.style.pointerEvents = "auto";
-    
-    speak(option.en, "player");
+    setSpeakerFocus("player");
+
+    const playerBubble = showPlayerBubble(option.en);
+    speak(option.en, "player", () => {
+      setSpeakerFocus("maya");
+      if (!playerBubble) return;
+      playerBubble.classList.remove("is-speaking");
+      playerBubble.classList.add("is-exit");
+      window.setTimeout(() => {
+        if (playerBubble.isConnected) playerBubble.remove();
+      }, 240);
+    });
 
     const natural =
       pickNode.options.find((o) => o.quality === "natural" && o.intent !== "exit") ||

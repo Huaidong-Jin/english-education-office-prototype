@@ -1,0 +1,895 @@
+/* ═══════════════════════════════════════════════════════════
+   Office Pantry · Choice Talk  —  Visual Novel / Manga UI
+   Warm paper, ink borders, immersive single-column layout
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ─────────────────────────────────────── */
+:root {
+  --paper: #faf6ee;
+  --paper-up: #fffdf7;
+  --ink: #1a1a2e;
+  --ink-soft: rgba(26,26,46,0.55);
+  --ink-faint: rgba(26,26,46,0.12);
+
+  /* quality colours */
+  --q-natural: #2e7d32;
+  --q-natural-bg: #e8f5e9;
+  --q-natural-border: #a5d6a7;
+  --q-off: #ef6c00;
+  --q-off-bg: #fff8e1;
+  --q-off-border: #ffcc80;
+  --q-awkward: #c62828;
+  --q-awkward-bg: #fce4ec;
+  --q-awkward-border: #ef9a9a;
+
+  /* mood tints (applied on stage & bubbles) */
+  --warm-tint: rgba(255,243,224,0.45);
+  --off-tint: rgba(255,248,225,0.45);
+  --awk-tint: rgba(252,228,236,0.40);
+  --cool-tint: rgba(227,242,253,0.45);
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --border: 2.5px solid var(--ink);
+  --border-soft: 1px solid var(--ink-faint);
+
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+}
+
+/* ── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ── Page Layout ───────────────────────────────────────── */
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  min-height: 100dvh;
+}
+
+/* ── Screen-reader only ────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   OVERLAY
+   ═══════════════════════════════════════════════════════════ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26,26,46,0.5);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+}
+.overlay.hidden { display: none; }
+
+.overlay__card {
+  width: min(440px, calc(100vw - 32px));
+  background: var(--paper-up);
+  border: var(--border);
+  border-radius: 24px;
+  padding: 36px 28px 28px;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(26,26,46,0.22);
+}
+.overlay__icon { font-size: 48px; margin-bottom: 8px; line-height: 1; }
+.overlay__title { margin: 0 0 8px; font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+.overlay__desc { margin: 0 0 28px; color: var(--ink-soft); font-size: 14px; line-height: 1.65; }
+.overlay__actions { display: flex; gap: 12px; justify-content: center; }
+
+.err-list {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--q-awkward-bg);
+  border: 1px solid var(--q-awkward-border);
+  color: var(--q-awkward);
+  font-size: 12px;
+  font-family: var(--mono);
+  text-align: left;
+  display: none;
+  max-height: 200px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+.err-list.show { display: block; }
+
+
+/* ═══════════════════════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 22px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  border: 2px solid var(--ink);
+  transition: transform 0.08s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn--primary { background: var(--ink); color: var(--paper); }
+.btn--primary:hover { box-shadow: 0 4px 16px rgba(26,26,46,0.22); }
+
+.btn--ghost { background: transparent; color: var(--ink-soft); border-color: var(--ink-faint); }
+.btn--ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   SCENE BAR
+   ═══════════════════════════════════════════════════════════ */
+.scene-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 16px;
+  padding-bottom: 16px;
+  border-bottom: var(--border-soft);
+  margin-bottom: 16px;
+}
+.scene-bar__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scene-bar__status {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.scene-bar__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  order: 3;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border: var(--border-soft);
+  background: var(--paper-up);
+  color: var(--ink-soft);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   VN GAME SCREEN  — everything in one cinematic frame
+   ═══════════════════════════════════════════════════════════ */
+.vn-screen {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 3px solid var(--ink);
+  margin-bottom: 16px;
+  background: #111;
+  aspect-ratio: 1 / 1;
+}
+
+/* ── Scene Background Layer ───────────────────────────── */
+.scene-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.scene-hero__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.scene-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.4s ease;
+}
+
+/* Mood tint overlays — light color wash, scene stays fully visible */
+.scene-hero[data-mood="warm"]   .scene-hero__overlay { background: rgba(255,200,100,0.12); }
+.scene-hero[data-mood="off"]    .scene-hero__overlay { background: rgba(255,200,50,0.10); }
+.scene-hero[data-mood="awkward"] .scene-hero__overlay { background: rgba(255,100,130,0.14); }
+.scene-hero[data-mood="cold"]   .scene-hero__overlay { background: rgba(100,150,255,0.14); }
+
+/* Context pills — top-left of the VN screen */
+.scene-hero__pills {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  z-index: 1;
+}
+.scene-hero__pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  letter-spacing: 0.2px;
+}
+.scene-hero__label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.9);
+  color: var(--ink);
+}
+
+
+/* ── Dialogue Overlay — fills entire VN screen ───────── */
+.vn-dialogue {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.vn-dialogue .dialogue {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+}
+
+/* ── Portrait — hidden; Maya is visible in the scene image ── */
+.vn-dialogue .portrait {
+  display: none;
+}
+
+@keyframes jitter {
+  0%   { transform: translate(0,0) rotate(0deg); }
+  35%  { transform: translate(1px,-1px) rotate(-0.6deg); }
+  70%  { transform: translate(-1px,1px) rotate(0.6deg); }
+  100% { transform: translate(0,0) rotate(0deg); }
+}
+@keyframes pop {
+  0%   { transform: scale(0.97); }
+  55%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+
+/* ── 吹き出し (Fukidashi) — manga speech bubble ──────── */
+.vn-dialogue .bubble {
+  position: absolute;
+  left: 12px;
+  top: 5%;
+  width: 36%;
+  max-width: 260px;
+  background: rgba(255,253,247,0.95);
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  padding: 14px 16px;
+  pointer-events: auto;
+  box-shadow: 3px 3px 0 rgba(26,26,46,0.18);
+  backdrop-filter: blur(6px);
+  z-index: 4;
+}
+
+/* Tail pointing RIGHT toward Maya — outer (ink border) */
+.vn-dialogue .bubble::before {
+  content: "";
+  position: absolute;
+  right: -26px;
+  bottom: 20%;
+  width: 0;
+  height: 0;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  border-left: 26px solid var(--ink);
+  z-index: 1;
+}
+/* Tail — inner (paper fill) */
+.vn-dialogue .bubble::after {
+  content: "";
+  position: absolute;
+  right: -19px;
+  bottom: calc(20% + 4px);
+  width: 0;
+  height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 20px solid rgba(255,253,247,0.95);
+  z-index: 2;
+}
+
+/* Speaker name */
+.vn-dialogue .bubble .speaker-name {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid var(--ink-faint);
+}
+
+/* Dialogue text */
+.vn-dialogue .bubble .line-text {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Sub text (translation) */
+.vn-dialogue .bubble .sub-text {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  display: none;
+}
+.vn-dialogue .bubble .sub-text.show { display: block; }
+
+/* Continue button */
+.vn-dialogue .bubble .continue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 0.15s;
+}
+.vn-dialogue .bubble .continue-btn:hover { background: var(--ink-faint); }
+
+/* ── Mood tints on bubble (manga quality styling) ────── */
+/* Natural/warm: clean rounded bubble */
+.vn-dialogue .bubble.mood-warm {
+  border-color: #b45309;
+  box-shadow: 4px 4px 0 rgba(180,83,9,0.12);
+}
+.vn-dialogue .bubble.mood-warm::before { border-left-color: #b45309; }
+
+/* Off: dashed border */
+.vn-dialogue .bubble.mood-off {
+  border-style: dashed;
+  border-color: var(--q-off);
+}
+.vn-dialogue .bubble.mood-off::before { border-left-color: var(--q-off); }
+
+/* Awkward: jagged/spiky feel */
+.vn-dialogue .bubble.mood-awkward {
+  border-color: var(--q-awkward);
+  border-radius: 18px 24px 14px 22px;
+  box-shadow: 4px 4px 0 rgba(198,40,40,0.12);
+}
+.vn-dialogue .bubble.mood-awkward::before { border-left-color: var(--q-awkward); }
+
+/* Cold: sharp blue */
+.vn-dialogue .bubble.mood-cold {
+  border-color: #4b6cb7;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 rgba(75,108,183,0.12);
+}
+.vn-dialogue .bubble.mood-cold::before { border-left-color: #4b6cb7; }
+
+/* ── Emanata / cue chips inside bubble ───────────────── */
+.vn-dialogue .emanata .mark {
+  border-color: var(--ink-faint);
+  color: var(--ink-soft);
+  background: rgba(255,255,255,0.7);
+}
+.vn-dialogue .cueRow .cue {
+  border-color: var(--ink-faint);
+  color: var(--ink-soft);
+  background: rgba(255,255,255,0.5);
+}
+.vn-dialogue .stage-dir {
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   STAGE  (panels below VN screen)
+   ═══════════════════════════════════════════════════════════ */
+.stage {
+  position: relative;
+  padding: 4px 0;
+  transition: background 0.4s ease, padding 0.3s ease;
+}
+.stage[data-mood="warm"]   { background: var(--warm-tint); border-radius: var(--radius); padding: 16px; }
+.stage[data-mood="off"]    { background: var(--off-tint);  border-radius: var(--radius); padding: 16px; }
+.stage[data-mood="awkward"] { background: var(--awk-tint);  border-radius: var(--radius); padding: 16px; }
+.stage[data-mood="cold"]   { background: var(--cool-tint); border-radius: var(--radius); padding: 16px; }
+
+
+/* ═══════════════════════════════════════════════════════════
+   PICK BOX  (overlay between characters inside VN screen)
+   ═══════════════════════════════════════════════════════════ */
+.vn-picks {
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  bottom: 6%;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.pick-prompt {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  margin-bottom: 6px;
+  text-align: center;
+}
+.pick-prompt-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  margin-bottom: 8px;
+  text-align: center;
+  display: none;
+}
+.pick-prompt-sub.show { display: block; }
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Option card — compact overlay style ─────────────── */
+.opt {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,253,247,0.92);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+.opt:hover {
+  border-color: var(--ink);
+  box-shadow: 0 2px 12px rgba(26,26,46,0.2);
+  transform: translateY(-1px);
+}
+
+/* Quality accent on left edge */
+.opt.q-natural { border-left: 4px solid var(--q-natural); }
+.opt.q-off     { border-left: 4px solid var(--q-off); }
+.opt.q-awkward { border-left: 4px solid var(--q-awkward); }
+
+.opt .idx {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+.opt .main { flex: 1; min-width: 0; }
+.opt .en {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.opt .subs {
+  display: none;
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.opt .subs.show { display: block; }
+
+/* Tags hidden by default */
+.opt .tags {
+  display: none;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.opt .tags.show { display: flex; }
+
+.tag {
+  font-size: 9px;
+  font-family: var(--mono);
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--ink-faint);
+  background: rgba(255,255,255,0.6);
+  color: var(--ink-soft);
+}
+.tag.sfx { font-weight: 700; border-width: 1.5px; }
+
+/* Arrow indicator on right side of option */
+.opt-arrow {
+  flex: 0 0 auto;
+  font-size: 16px;
+  color: var(--ink-faint);
+  transition: color 0.15s, transform 0.15s;
+}
+.opt:hover .opt-arrow {
+  color: var(--ink);
+  transform: translateX(3px);
+}
+
+/* Dialogue box fade when picks appear */
+.vn-dialogue {
+  transition: opacity 0.35s ease;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   FEEDBACK BOX
+   ═══════════════════════════════════════════════════════════ */
+.feedback-box {
+  display: none;
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  border: var(--border);
+  background: var(--paper-up);
+}
+.feedback-box.show { display: block; }
+
+.feedback-box .fb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.quality-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.quality-badge.natural { background: var(--q-natural-bg); color: var(--q-natural); border: 1.5px solid var(--q-natural-border); }
+.quality-badge.off     { background: var(--q-off-bg);     color: var(--q-off);     border: 1.5px solid var(--q-off-border); }
+.quality-badge.awkward  { background: var(--q-awkward-bg); color: var(--q-awkward);  border: 1.5px solid var(--q-awkward-border); }
+
+.feedback-box .fb-next-btn {
+  padding: 7px 16px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+.feedback-box .fb-next-btn:hover { background: var(--ink-faint); }
+
+.feedback-box .fb-stage-dir {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* Shared explain & subText visibility */
+.explain {
+  font-size: 13px;
+  color: var(--ink-soft);
+  display: none;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: var(--border-soft);
+  line-height: 1.55;
+}
+.explain.show { display: block; }
+
+.subText {
+  font-size: 13px;
+  color: var(--ink-soft);
+  display: none;
+  margin-top: 4px;
+}
+.subText.show { display: block; }
+
+
+/* ═══════════════════════════════════════════════════════════
+   RECAP
+   ═══════════════════════════════════════════════════════════ */
+.recap-wrap {
+  display: none;
+  margin-top: 24px;
+}
+.recap-wrap.show { display: block; }
+
+.recap-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: var(--border);
+}
+
+.recapGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+@media (max-width: 500px) {
+  .recapGrid { grid-template-columns: 1fr; }
+}
+
+.panelCard {
+  border-radius: var(--radius);
+  border: var(--border);
+  background: var(--paper-up);
+  padding: 14px;
+}
+.panelCard .ttl {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panelCard .txt {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.panelBadge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.panelBadge.ok   { background: var(--q-natural-bg); color: var(--q-natural); }
+.panelBadge.warn { background: var(--q-off-bg);     color: var(--q-off); }
+.panelBadge.bad  { background: var(--q-awkward-bg);  color: var(--q-awkward); }
+
+.transfer { margin-top: 12px; }
+.transfer button {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--ink-faint);
+  background: var(--paper-up);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  transition: border-color 0.15s;
+}
+.transfer button:hover { border-color: var(--ink-soft); }
+
+.recap-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+.recap-actions button {
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.recap-actions button:hover { background: var(--ink-faint); }
+.recap-actions .primary-action { background: var(--ink); color: var(--paper); }
+.recap-actions .primary-action:hover { box-shadow: 0 4px 16px rgba(26,26,46,0.2); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   TOOLBAR
+   ═══════════════════════════════════════════════════════════ */
+.toolbar {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  padding: 16px 0;
+  margin-top: 8px;
+  border-top: var(--border-soft);
+}
+.toolbar__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 11px;
+  transition: color 0.15s, border-color 0.15s;
+  user-select: none;
+}
+.toolbar__btn:hover { color: var(--ink); border-color: var(--ink-faint); }
+.toolbar__ic { font-size: 18px; font-weight: 700; line-height: 1; }
+.toolbar__lb { font-weight: 600; letter-spacing: 0.3px; }
+.toolbar__btn--danger { color: var(--q-awkward); }
+.toolbar__btn--danger:hover { border-color: var(--q-awkward-border); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   VOICE DRAWER
+   ═══════════════════════════════════════════════════════════ */
+.drawer {
+  margin-top: 4px;
+  padding: 18px 18px;
+  border-radius: var(--radius);
+  border: var(--border);
+  background: var(--paper-up);
+}
+.drawer__title { margin: 0 0 14px; font-size: 14px; font-weight: 700; }
+.drawer__field { margin-bottom: 14px; }
+.drawer__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+.drawer__val {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--ink-faint);
+  background: rgba(255,255,255,0.6);
+}
+.drawer__select,
+.drawer input[type="range"] { width: 100%; font-size: 13px; }
+.drawer__select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--ink-faint);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   KEYBOARD HINTS
+   ═══════════════════════════════════════════════════════════ */
+.kbd-bar {
+  text-align: center;
+  padding: 12px 0;
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.2px;
+}
+.kbd-bar kbd {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--ink-faint);
+  background: rgba(255,255,255,0.6);
+  margin: 0 1px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .page { padding: 12px 8px 32px; }
+
+  .vn-screen { aspect-ratio: 4 / 3; border-radius: 12px; }
+  .vn-dialogue .bubble {
+    left: 8px; right: 8px; top: 6%; width: auto; max-width: none;
+    padding: 12px 14px;
+  }
+  .vn-dialogue .bubble::before,
+  .vn-dialogue .bubble::after { display: none; }
+  .vn-dialogue .bubble .line-text { font-size: 13px; }
+  .vn-dialogue .bubble .speaker-name { font-size: 10px; }
+  .scene-hero__pills { top: 8px; left: 8px; right: 8px; gap: 4px; }
+  .scene-hero__pill { font-size: 10px; padding: 3px 8px; }
+
+  .vn-picks { left: 8%; right: 8%; bottom: 4%; }
+  .opt { padding: 8px 10px; gap: 8px; }
+  .opt .en { font-size: 12px; }
+
+  .overlay__actions { flex-direction: column; }
+  .overlay__card { padding: 24px 20px; }
+
+  .toolbar { flex-wrap: wrap; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   MOTION SAFETY
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

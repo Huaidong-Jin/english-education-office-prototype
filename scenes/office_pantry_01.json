@@ -1,0 +1,500 @@
+{
+  "scene": {
+    "id": "office_pantry_01",
+    "title": {
+      "en": "Office Pantry . Late Afternoon",
+      "zh": "办公室茶水间. 下午",
+      "ja": "オフィスの給湯室. 夕方"
+    },
+    "context": {
+      "location": "office pantry",
+      "time": "late afternoon",
+      "relationship": "familiar coworkers",
+      "vibe": ["light", "playful", "safe-flirty"]
+    },
+    "characters": {
+      "npcA": { "id": "maya", "displayName": "Maya", "role": "coworker", "styleTags": ["warm", "witty"] },
+      "player": { "id": "you", "displayName": "You", "role": "player" }
+    }
+  },
+  "nodes": [
+    {
+      "id": "n001",
+      "type": "npc",
+      "speaker": "maya",
+      "line": {
+        "en": "You look way too focused today. Are you secretly auditioning for Employee of the Month?",
+        "zh": "你今天也太认真了吧. 你是在偷偷竞争月度员工吗?",
+        "ja": "今日やけに真面目だね. 月間MVPでも狙ってるの?"
+      },
+      "voice": { "engine": "local_tts", "voiceHint": "female_default", "rate": 1.0, "pitch": 1.0 },
+      "nonverbal": { "face": "smirk", "gaze": "direct", "beat": "light-laugh" },
+      "next": "n002"
+    },
+
+    {
+      "id": "n002",
+      "type": "pick",
+      "isTeasingBeat": true,
+      "prompt": {
+        "en": "Pick a natural, playful reply.",
+        "zh": "选一句自然又俏皮的回复.",
+        "ja": "自然で軽いノリの返しを選んで."
+      },
+      "options": [
+        {
+          "id": "o1",
+          "en": "Only if the prize is extra coffee. I’m very easy to bribe.",
+          "zh": "除非奖品是多一杯咖啡. 我可太好收买了.",
+          "ja": "賞品がコーヒー増量ならね. 私, 買収されやすいタイプ.",
+          "quality": "natural",
+          "intent": "tease",
+          "tone": ["playful", "warm"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "laugh", "gaze": "soft", "beat": "quick" },
+            "followupNode": "n003"
+          },
+          "explain": {
+            "en": "Self-deprecating humor keeps it light and inviting.",
+            "zh": "自嘲式幽默很轻松, 也更容易把对话往下接.",
+            "ja": "自虐気味のユーモアで空気が軽くなり, 会話が続きやすい."
+          }
+        },
+        {
+          "id": "o2",
+          "en": "Yes. I am pursuing excellence and maximizing productivity.",
+          "zh": "是的. 我在追求卓越并最大化生产力.",
+          "ja": "はい. 私は卓越性を追求し生産性を最大化しています.",
+          "quality": "awkward",
+          "intent": "respond",
+          "tone": ["stiff", "formal"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "pause", "gaze": "blink", "beat": "awkward-silence" },
+            "followupNode": "n003_cooldown"
+          },
+          "explain": {
+            "en": "It sounds like a status report, not small talk.",
+            "zh": "像汇报, 不像闲聊.",
+            "ja": "雑談というより報告っぽく聞こえる."
+          }
+        },
+        {
+          "id": "o3",
+          "en": "Ha, maybe. Anyway, I should get back to it. Catch you later.",
+          "zh": "哈哈也许吧. 我得回去继续忙了. 回头见.",
+          "ja": "まあね. そろそろ戻るよ. またね.",
+          "quality": "natural",
+          "intent": "exit",
+          "tone": ["polite", "easy"],
+          "isGracefulExit": true,
+          "npcReaction": {
+            "nonverbal": { "face": "smile", "gaze": "nod", "beat": "accepting" },
+            "followupNode": "n_end_soft"
+          },
+          "explain": {
+            "en": "A graceful exit saves face and keeps the vibe warm.",
+            "zh": "体面退出既不尴尬, 也能保持关系温度.",
+            "ja": "角が立たない終わらせ方で, 関係性も保てる."
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "n003",
+      "type": "npc",
+      "speaker": "maya",
+      "line": {
+        "en": "Extra coffee, huh? Careful. I might start bribing you just to see you smile.",
+        "zh": "额外咖啡是吧. 小心我真用咖啡贿赂你, 就为了看你笑一下.",
+        "ja": "コーヒー追加ね. 気をつけて. 笑顔が見たくて買収しちゃうかも."
+      },
+      "nonverbal": { "face": "tease", "gaze": "direct", "beat": "playful" },
+      "next": "n004"
+    },
+
+    {
+      "id": "n003_cooldown",
+      "type": "npc",
+      "speaker": "maya",
+      "line": {
+        "en": "Wow. That was... impressively corporate. I’m almost intimidated.",
+        "zh": "哇. 这也太企业化了吧. 我都有点被震住了.",
+        "ja": "うわ. すごいコーポレート感. ちょっと圧倒された."
+      },
+      "nonverbal": { "face": "pause", "gaze": "side", "beat": "short" },
+      "next": "n004_recover"
+    },
+
+    {
+      "id": "n004",
+      "type": "pick",
+      "isTeasingBeat": true,
+      "prompt": {
+        "en": "Keep it playful without going too far.",
+        "zh": "继续俏皮一点, 但别过界.",
+        "ja": "軽くからかう感じで. でも踏み込みすぎないで."
+      },
+      "options": [
+        {
+          "id": "o1",
+          "en": "If you’re bribing smiles, you’ll go broke. I’m expensive.",
+          "zh": "如果你靠贿赂买笑容, 你会破产的. 我很贵的.",
+          "ja": "笑顔を買収するなら破産するよ. 私, 高いから.",
+          "quality": "natural",
+          "intent": "tease",
+          "tone": ["playful"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "laugh", "gaze": "soft", "beat": "quick" },
+            "followupNode": "n005"
+          },
+          "explain": {
+            "en": "Playful exaggeration signals flirting without pressure.",
+            "zh": "夸张式玩笑很暧昧但不强迫对方回应.",
+            "ja": "大げさに言うと軽いフラート感が出るけど圧はかからない."
+          }
+        },
+        {
+          "id": "o2",
+          "en": "Are you trying to flirt with me at work?",
+          "zh": "你这是在办公室跟我调情吗?",
+          "ja": "職場で私にフラートしてるの?",
+          "quality": "awkward",
+          "intent": "challenge",
+          "tone": ["too-direct"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "freeze", "gaze": "blink", "beat": "awkward-silence" },
+            "followupNode": "n005_cooldown"
+          },
+          "explain": {
+            "en": "It calls it out too directly, which can make it tense in a workplace.",
+            "zh": "太直接点破, 在职场很容易让气氛变尴尬.",
+            "ja": "直球で言いすぎると職場では空気が固まりやすい."
+          }
+        },
+        {
+          "id": "o3",
+          "en": "You’re sweet. I should get back though. See you around.",
+          "zh": "你真会说. 不过我得回去忙了. 回头见.",
+          "ja": "優しいね. でも戻るよ. またね.",
+          "quality": "natural",
+          "intent": "exit",
+          "tone": ["warm", "polite"],
+          "isGracefulExit": true,
+          "npcReaction": {
+            "nonverbal": { "face": "smile", "gaze": "nod", "beat": "accepting" },
+            "followupNode": "n_end_soft"
+          },
+          "explain": {
+            "en": "Affirm lightly, then exit. It keeps the door open and stays safe.",
+            "zh": "轻轻接住夸奖再退出, 既不冷也不越界.",
+            "ja": "軽く受け取ってから離脱. 余韻は残しつつ安全."
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "n004_recover",
+      "type": "pick",
+      "isTeasingBeat": true,
+      "prompt": {
+        "en": "Recover smoothly after a stiff moment.",
+        "zh": "刚才有点僵, 现在要自然地圆回来.",
+        "ja": "さっき固かった雰囲気を自然に戻して."
+      },
+      "options": [
+        {
+          "id": "o1",
+          "en": "Okay, okay. I hear myself. That sounded like a press release.",
+          "zh": "好吧好吧. 我自己都听到了. 刚才像在念新闻稿.",
+          "ja": "うんうん. 自分でも分かる. 今の, プレスリリースみたいだった.",
+          "quality": "natural",
+          "intent": "self-deprecate",
+          "tone": ["warm", "humble"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "relieved-laugh", "gaze": "soft", "beat": "release" },
+            "followupNode": "n005_recover"
+          },
+          "explain": {
+            "en": "Owning it with humor lowers tension immediately.",
+            "zh": "自嘲承认会立刻降温, 让对方好接话.",
+            "ja": "自分でツッコむと一気に緊張がほどける."
+          }
+        },
+        {
+          "id": "o2",
+          "en": "Let’s not talk. I’m busy.",
+          "zh": "别聊了. 我忙.",
+          "ja": "話しかけないで. 忙しい.",
+          "quality": "awkward",
+          "intent": "shut-down",
+          "tone": ["cold"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "hurt", "gaze": "down", "beat": "short" },
+            "followupNode": "n_end_cold"
+          },
+          "explain": {
+            "en": "It’s understandable but too cold for a familiar coworker moment.",
+            "zh": "能懂, 但对熟同事太冷了.",
+            "ja": "意味は通るけど, 親しい同僚には冷たすぎる."
+          }
+        },
+        {
+          "id": "o3",
+          "en": "Anyway, I should get back. Catch you later.",
+          "zh": "那我先回去忙了. 回头见.",
+          "ja": "じゃ, 戻るね. またね.",
+          "quality": "natural",
+          "intent": "exit",
+          "tone": ["polite", "easy"],
+          "isGracefulExit": true,
+          "npcReaction": {
+            "nonverbal": { "face": "smile", "gaze": "nod", "beat": "accepting" },
+            "followupNode": "n_end_soft"
+          },
+          "explain": {
+            "en": "A neutral exit avoids more awkwardness and keeps it friendly.",
+            "zh": "体面退出避免更尴尬, 还保持友好.",
+            "ja": "角が立たない終わり方で友好的に保てる."
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "n005",
+      "type": "npc",
+      "speaker": "maya",
+      "line": {
+        "en": "Expensive, huh? Noted. I’ll need a bigger coffee budget.",
+        "zh": "很贵是吧. 记下了. 看来我得申请更大的咖啡预算.",
+        "ja": "高いんだ. 了解. コーヒー予算, 増やさないとね."
+      },
+      "nonverbal": { "face": "laugh", "gaze": "direct", "beat": "playful" },
+      "next": "n006"
+    },
+
+    {
+      "id": "n005_cooldown",
+      "type": "npc",
+      "speaker": "maya",
+      "line": {
+        "en": "Uh... I was just messing around. Anyway, how’s your day going?",
+        "zh": "呃... 我就是开个玩笑. 那个, 你今天过得怎么样?",
+        "ja": "えっと... ただ冗談だったよ. で, 今日どう?"
+      },
+      "nonverbal": { "face": "awkward-smile", "gaze": "avoid", "beat": "topic-shift" },
+      "next": "n006"
+    },
+
+    {
+      "id": "n005_recover",
+      "type": "npc",
+      "speaker": "maya",
+      "line": {
+        "en": "Ha. Thank you for your honesty. That was kind of adorable.",
+        "zh": "哈. 你这么坦诚我很欣赏. 还有点可爱.",
+        "ja": "ふふ. 正直でいいね. ちょっと可愛いかも."
+      },
+      "nonverbal": { "face": "warm-smile", "gaze": "soft", "beat": "gentle" },
+      "next": "n006"
+    },
+
+    {
+      "id": "n006",
+      "type": "pick",
+      "isTeasingBeat": true,
+      "prompt": {
+        "en": "Answer, keep it light, and decide whether to continue or exit.",
+        "zh": "回答一下, 轻松点, 然后决定继续聊还是退出.",
+        "ja": "軽く答えて, 続けるか切り上げるか選んで."
+      },
+      "options": [
+        {
+          "id": "o1",
+          "en": "Honestly? Pretty good. You’re improving it by at least 12%.",
+          "zh": "说真的还不错. 你至少让它提升了 12%.",
+          "ja": "正直, けっこう良いよ. 君のおかげで少なくとも12%アップ.",
+          "quality": "natural",
+          "intent": "tease",
+          "tone": ["playful", "warm"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "laugh", "gaze": "soft", "beat": "quick" },
+            "followupNode": "n007"
+          },
+          "explain": {
+            "en": "A playful fake number feels flirty without pressure.",
+            "zh": "假数字的小幽默暧昧但不强迫, 很适合熟同事.",
+            "ja": "適当な数字ジョークは軽いフラート感が出るけど圧は低い."
+          }
+        },
+        {
+          "id": "o2",
+          "en": "My day is going efficiently according to plan.",
+          "zh": "我今天按计划高效推进.",
+          "ja": "計画通り効率的に進んでいます.",
+          "quality": "awkward",
+          "intent": "report",
+          "tone": ["stiff"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "pause", "gaze": "blink", "beat": "short" },
+            "followupNode": "n007_cooldown"
+          },
+          "explain": {
+            "en": "Still sounds like a report. It lowers the playful vibe.",
+            "zh": "还是像汇报. 会把轻松氛围压下去.",
+            "ja": "まだ報告っぽい. 軽い空気が落ちる."
+          }
+        },
+        {
+          "id": "o3",
+          "en": "Not bad. I’m going to grab a refill and head back. See you later.",
+          "zh": "还行. 我去续杯然后回去. 待会见.",
+          "ja": "悪くないよ. おかわりして戻るね. また後で.",
+          "quality": "natural",
+          "intent": "exit",
+          "tone": ["easy", "polite"],
+          "isGracefulExit": true,
+          "npcReaction": {
+            "nonverbal": { "face": "smile", "gaze": "nod", "beat": "accepting" },
+            "followupNode": "n_end_soft"
+          },
+          "explain": {
+            "en": "Natural exit with a small reason. Friendly and smooth.",
+            "zh": "给一个小理由的体面退出, 友好又顺.",
+            "ja": "小さな理由付きの自然な離脱. 友好的でスムーズ."
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "n007",
+      "type": "npc",
+      "speaker": "maya",
+      "line": {
+        "en": "Twelve percent? That’s oddly specific. I’ll take it.",
+        "zh": "12%? 你这具体得有点离谱. 但我收下了.",
+        "ja": "12%って妙に具体的だね. でも受け取っとく."
+      },
+      "nonverbal": { "face": "smile", "gaze": "direct", "beat": "light" },
+      "next": "n008"
+    },
+
+    {
+      "id": "n007_cooldown",
+      "type": "npc",
+      "speaker": "maya",
+      "line": {
+        "en": "Efficient. Right. I’m going to let you keep being... efficient.",
+        "zh": "高效. 行吧. 那我不打扰你继续... 高效了.",
+        "ja": "効率的. なるほど. じゃ, その... 効率を邪魔しないようにするね."
+      },
+      "nonverbal": { "face": "awkward-smile", "gaze": "side", "beat": "cool" },
+      "next": "n008"
+    },
+
+    {
+      "id": "n008",
+      "type": "pick",
+      "isTeasingBeat": true,
+      "prompt": {
+        "en": "Wrap up. Keep it playful and safe.",
+        "zh": "收尾. 俏皮但安全.",
+        "ja": "締め. 軽くて安全に."
+      },
+      "options": [
+        {
+          "id": "o1",
+          "en": "Deal. I’ll try not to be too ‘efficient’ without your supervision.",
+          "zh": "成交. 没有你监督, 我尽量别太‘高效’.",
+          "ja": "了解. 君の監督なしであまり‘効率的’すぎないようにするよ.",
+          "quality": "natural",
+          "intent": "tease",
+          "tone": ["playful"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "laugh", "gaze": "soft", "beat": "quick" },
+            "followupNode": "n_end_soft"
+          },
+          "explain": {
+            "en": "Playful callback. It repairs the vibe and ends warmly.",
+            "zh": "呼应梗, 顺便修复氛围, 还能温暖收尾.",
+            "ja": "ネタ回収で空気を戻しつつ, 温かく終われる."
+          }
+        },
+        {
+          "id": "o2",
+          "en": "You should stop talking to me.",
+          "zh": "你别跟我说话了.",
+          "ja": "もう話しかけないで.",
+          "quality": "awkward",
+          "intent": "shut-down",
+          "tone": ["cold"],
+          "isGracefulExit": false,
+          "npcReaction": {
+            "nonverbal": { "face": "hurt", "gaze": "down", "beat": "short" },
+            "followupNode": "n_end_cold"
+          },
+          "explain": {
+            "en": "Too harsh for this relationship. It lands as rejection.",
+            "zh": "对这个关系太狠, 会像直接拒绝.",
+            "ja": "関係性に対して強すぎて拒絶に聞こえる."
+          }
+        },
+        {
+          "id": "o3",
+          "en": "Anyway, I’ll let you get back to your day. Catch you later.",
+          "zh": "那我不打扰你了. 回头见.",
+          "ja": "じゃ, 邪魔しないよ. またね.",
+          "quality": "natural",
+          "intent": "exit",
+          "tone": ["polite", "easy"],
+          "isGracefulExit": true,
+          "npcReaction": {
+            "nonverbal": { "face": "smile", "gaze": "nod", "beat": "accepting" },
+            "followupNode": "n_end_soft"
+          },
+          "explain": {
+            "en": "Classic graceful exit. Safe and friendly.",
+            "zh": "经典体面退出, 安全友好.",
+            "ja": "定番の角が立たない終わり方. 安全で友好的."
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "n_end_soft",
+      "type": "end",
+      "ending": "soft",
+      "line": {
+        "en": "Maya smiles and waves. The moment ends on a warm note.",
+        "zh": "Maya 微笑挥手. 氛围温暖地结束了.",
+        "ja": "Maya は笑って手を振る. いい空気のまま終わる."
+      }
+    },
+
+    {
+      "id": "n_end_cold",
+      "type": "end",
+      "ending": "cold",
+      "line": {
+        "en": "Maya looks away, then quietly leaves. The vibe cools fast.",
+        "zh": "Maya 眼神躲开, 然后安静离开. 氛围迅速降温.",
+        "ja": "Maya は目をそらして静かに去る. 空気が一気に冷える."
+      }
+    }
+  ]
+}
+
+
